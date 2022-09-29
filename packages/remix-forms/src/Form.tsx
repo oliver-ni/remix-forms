@@ -160,6 +160,7 @@ const fieldTypes: Record<ZodTypeName, FieldType> = {
 function Form<Schema extends SomeZodObject>({
   component = RemixForm,
   fetcher,
+  onSubmit,
   mode = 'onSubmit',
   renderField = defaultRenderField,
   fieldComponent,
@@ -230,8 +231,8 @@ function Form<Schema extends SomeZodObject>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transition.state])
 
-  const onSubmit = (event: any) => {
-    form.handleSubmit(() => submit(event.target))(event)
+  const handleSubmit = (event: any) => {
+    form.handleSubmit(onSubmit ?? (() => submit(event.target)))(event)
   }
 
   const Field = React.useMemo(
@@ -345,7 +346,7 @@ function Form<Schema extends SomeZodObject>({
     })
 
     return (
-      <Component method={method} onSubmit={onSubmit} {...props}>
+      <Component method={method} onSubmit={handleSubmit} {...props}>
         {beforeChildren}
         {mapChildren(children, (child) => {
           if (!React.isValidElement(child)) return child
